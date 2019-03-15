@@ -1,0 +1,5 @@
+2019-03-15 14:48:55 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement "DELETE *[*] FROM USER_DATA
+WHERE ID=33 "; expected "identifier"; SQL statement:
+delete * FROM USER_DATA
+where id=33 [42001-197]
