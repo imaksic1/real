@@ -57,7 +57,6 @@ public class LoginRegisterServise {
             json1 += errUsername;
         }
         json1 += "}}";
-        System.out.println(json1);
         return new JSONObject(json1);
     }
 
