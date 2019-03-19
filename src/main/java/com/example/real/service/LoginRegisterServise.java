@@ -1,7 +1,6 @@
 package com.example.real.service;
 
 import com.example.real.dto.ErrorBody;
-import com.example.real.dto.ErrorSignInBody;
 import com.example.real.dto.ErrorSignInText;
 import com.example.real.dto.ErrorText;
 import com.example.real.dto.LoginUser;
@@ -33,7 +32,6 @@ public class LoginRegisterServise {
 
     public ResponseEntity<?> signInUser(LoginUser loginUser){
         UserData userData;
-        ErrorSignInBody errorSignInBody = new ErrorSignInBody();
         ErrorSignInText errorSignInText = new ErrorSignInText();
         HashMap<String,LinkedList<String>> hashMap = new HashMap<>();
         LinkedList<String> text = new LinkedList<>();
