@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,11 +24,12 @@ public class TokenService {
     @Value("${security.jwt.token.expire-length:3600000}")
     private long validityInMilliseconds = 3600000; // 1h
 
-    @Autowired
-    UserLoginRegisterRepository userLoginRegisterRepository;
+    @PostConstruct
+    protected void init() {
+        secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
+    }
 
     public String createToken(UserData userdata) {
-
         Map<String, Object> mapClaims = new HashMap<>();
         mapClaims.put("id", userdata.getId());
         mapClaims.put("username", userdata.getUsername());
