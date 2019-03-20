@@ -128,6 +128,8 @@ public class LoginRegisterServise {
         Date createdAt = new Date();
         userLoginRegister.setCreatedAt(createdAt);
         userLoginRegister.setUpdatedAt(createdAt);
+        userLoginRegisterRepo.save(userLoginRegister);
+        userLoginRegister = userLoginRegisterRepo.findByEmail(registerUser.getEmail());
         userLoginRegister.setToken(tokenService.createToken(userLoginRegister));
         userLoginRegisterRepo.save(userLoginRegister);
     }
