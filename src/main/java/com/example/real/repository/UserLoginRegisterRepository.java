@@ -5,7 +5,6 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
-import java.util.List;
 
 @Repository
 public interface UserLoginRegisterRepository extends CrudRepository<UserData,Long> {
@@ -14,7 +13,7 @@ public interface UserLoginRegisterRepository extends CrudRepository<UserData,Lon
 
     UserData findByUsername(String username);
 
-    boolean existsByUsername(String username);
+    UserData findByToken (String token);
 
     @Transactional
     void deleteByUsername(String username);

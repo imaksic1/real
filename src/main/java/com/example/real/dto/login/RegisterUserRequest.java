@@ -1,5 +1,6 @@
-package com.example.real.dto;
+package com.example.real.dto.login;
 
+import com.example.real.dto.login.RegisterUser;
 import lombok.Data;
 
 @Data

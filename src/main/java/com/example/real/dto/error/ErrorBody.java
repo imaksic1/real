@@ -1,4 +1,4 @@
-package com.example.real.dto;
+package com.example.real.dto.error;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;

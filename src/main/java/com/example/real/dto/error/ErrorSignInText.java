@@ -1,4 +1,4 @@
-package com.example.real.dto;
+package com.example.real.dto.error;
 
 import lombok.Data;
 

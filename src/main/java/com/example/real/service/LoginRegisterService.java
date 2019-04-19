@@ -1,10 +1,14 @@
 package com.example.real.service;
 
-import com.example.real.dto.ErrorBody;
-import com.example.real.dto.ErrorSignInText;
-import com.example.real.dto.ErrorText;
-import com.example.real.dto.LoginUser;
-import com.example.real.dto.RegisterUser;
+import com.example.real.dto.error.ErrorBody;
+import com.example.real.dto.error.ErrorSignInText;
+import com.example.real.dto.error.ErrorText;
+import com.example.real.dto.login.LoginUser;
+import com.example.real.dto.login.LoginUserRequest;
+import com.example.real.dto.login.LoginUserResponse;
+import com.example.real.dto.login.RegisterUser;
+import com.example.real.dto.login.RegisterUserRequest;
+import com.example.real.dto.user.UserDataDTO;
 import com.example.real.mapping.UserDataMapper;
 import com.example.real.model.UserData;
 import com.example.real.repository.UserLoginRegisterRepository;
@@ -12,14 +16,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 
 @Service
-public class LoginRegisterServise {
+public class LoginRegisterService {
 
     @Autowired
     UserLoginRegisterRepository userLoginRegisterRepo;
@@ -30,8 +33,10 @@ public class LoginRegisterServise {
     @Autowired
     UserDataMapper userDataMapper;
 
-    public ResponseEntity<?> signInUser(LoginUser loginUser){
-        UserData userData;
+    public ResponseEntity signInUser(LoginUserRequest loginUserRequest){
+        LoginUser loginUser = new LoginUser();
+        loginUser = loginUserRequest.getUser();
+        UserData userData = new UserData();
         ErrorSignInText errorSignInText = new ErrorSignInText();
         HashMap<String,LinkedList<String>> hashMap = new HashMap<>();
         LinkedList<String> text = new LinkedList<>();
@@ -49,11 +54,17 @@ public class LoginRegisterServise {
         if (!userData.getPassword().equals(loginUser.getPassword())){
             return new ResponseEntity<>(errorSignInText, HttpStatus.UNPROCESSABLE_ENTITY);
         }
-        return new ResponseEntity<>(userDataMapper.UserDataToUserDataDTO(userData) , HttpStatus.OK);
+        tokenService.changeToken(userData);
+        userData = userLoginRegisterRepo.findByEmail(loginUser.getEmail());
+        UserDataDTO userDataDTO = userDataMapper.UserDataToUserDataDTO(userData);
+        LoginUserResponse loginUserResponse = new LoginUserResponse();
+        loginUserResponse.setUser(userDataDTO);
+        return new ResponseEntity<>(loginUserResponse , HttpStatus.OK);
     }
 
-
-        public ResponseEntity<?> validUser(RegisterUser registerUser){
+    public ResponseEntity validUser(RegisterUserRequest registerUserRequest){
+        RegisterUser registerUser = new RegisterUser();
+        registerUser = registerUserRequest.getUser();
         ErrorText errorText = new ErrorText();
         ErrorBody errorBody = new ErrorBody();
         boolean hasError = false;
@@ -74,18 +85,21 @@ public class LoginRegisterServise {
             hasError = true;
         }
         if (hasError){
-            errorText.setError(errorBody);
+            errorText.setErrors(errorBody);
             return new ResponseEntity<>(errorText, HttpStatus.UNPROCESSABLE_ENTITY);
         }else{
             saveToLoginRegisterRepository(registerUser);
             UserData userData = userLoginRegisterRepo.findByUsername(registerUser.getUsername());
-            return new ResponseEntity<>(userDataMapper.UserDataToUserDataDTO(userData), HttpStatus.OK);
+            UserDataDTO userDataDTO = userDataMapper.UserDataToUserDataDTO(userData);
+            LoginUserResponse loginUserResponse = new LoginUserResponse();
+            loginUserResponse.setUser(userDataDTO);
+            return new ResponseEntity<>(loginUserResponse, HttpStatus.OK);
         }
     }
 
-    LinkedList<String> errEmail (RegisterUser registerUser) {
+    private LinkedList<String> errEmail (RegisterUser registerUser) {
         LinkedList<String> err = new LinkedList();
-        if (registerUser.getEmail().length() == 0) {
+        if (registerUser.getEmail() == null || registerUser.getEmail().length() == 0) {
             err.add("can't be blank");
         }
         if (userLoginRegisterRepo.findByEmail(registerUser.getEmail()) != null) {
@@ -94,9 +108,9 @@ public class LoginRegisterServise {
         return err;
     }
 
-    LinkedList<String> errPassword (RegisterUser registerUser) {
+    private LinkedList<String> errPassword (RegisterUser registerUser) {
         LinkedList<String> err = new LinkedList();
-        if (registerUser.getPassword().length() == 0) {
+        if (registerUser.getPassword() == null || registerUser.getPassword().length() == 0) {
             err.add("can't be blank");
             return err;
         }
@@ -106,10 +120,10 @@ public class LoginRegisterServise {
         return err;
     }
 
-    LinkedList<String> errUsername (RegisterUser registerUser) {
+    private LinkedList<String> errUsername (RegisterUser registerUser) {
         LinkedList<String> err = new LinkedList();
-        if (registerUser.getUsername().length() == 0) {
-            err.add("can't be blank','is too short (minimum is 1 character)");
+        if (registerUser.getUsername() == null || registerUser.getUsername().length() == 0) {
+            err.add("can't be blank, is too short (minimum is 1 character)");
         }
         if (registerUser.getUsername().length() > 20) {
             err.add("is too long (maximum is 20 characters)");
@@ -120,7 +134,7 @@ public class LoginRegisterServise {
         return err;
     }
 
-    public void saveToLoginRegisterRepository(RegisterUser registerUser){
+    private void saveToLoginRegisterRepository(RegisterUser registerUser){
         UserData userLoginRegister = new UserData();
         userLoginRegister.setEmail(registerUser.getEmail());
         userLoginRegister.setPassword(registerUser.getPassword());
@@ -132,9 +146,5 @@ public class LoginRegisterServise {
         userLoginRegister = userLoginRegisterRepo.findByEmail(registerUser.getEmail());
         userLoginRegister.setToken(tokenService.createToken(userLoginRegister));
         userLoginRegisterRepo.save(userLoginRegister);
-    }
-
-    String formatDateTime (Date inputDate){
-        return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSz").format(inputDate) ;
     }
 }

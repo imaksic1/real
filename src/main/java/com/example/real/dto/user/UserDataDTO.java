@@ -1,6 +1,5 @@
-package com.example.real.dto;
+package com.example.real.dto.user;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.util.Date;
