@@ -25,6 +25,8 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+import static com.example.real.specifications.UserDataSpecifications.findByEmail;
+
 @Service
 public class StartUpService {
 
@@ -161,7 +163,7 @@ public class StartUpService {
             err.add("can't be blank");
             return err;
         }
-        if (userLoginRegisterRepo.findByEmail(settings.getEmail()) != null && !settings.getEmail().equals(userData.getEmail())) {
+        if (userLoginRegisterRepo.findOne(findByEmail(settings.getEmail())) != null && !settings.getEmail().equals(userData.getEmail())) {
             err.add("has already been taken");
             return err;
         }

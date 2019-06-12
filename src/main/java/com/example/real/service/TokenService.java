@@ -20,6 +20,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.example.real.specifications.UserDataSpecifications.findByEmail;
+
 
 @Service
 public class TokenService {
@@ -42,7 +44,8 @@ public class TokenService {
     UserDataMapper userDataMapper;
 
     public void changeToken(UserData userData){
-        userData = userLoginRegisterRepo.findByEmail(userData.getEmail());
+        //userData = userLoginRegisterRepo.findByEmail(userData.getEmail());
+        userData = userLoginRegisterRepo.findOne(findByEmail(userData.getEmail()));
         userData.setToken(createToken(userData));
         userLoginRegisterRepo.save(userData);
     }

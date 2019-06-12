@@ -21,6 +21,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+import static com.example.real.specifications.UserDataSpecifications.findByEmail;
+
 @Service
 public class LoginRegisterService {
 
@@ -47,7 +49,8 @@ public class LoginRegisterService {
         if (loginUser.getEmail().equals("")  || loginUser.getPassword().equals("") ) {
             return new ResponseEntity<>(errorSignInText, HttpStatus.UNPROCESSABLE_ENTITY);
         }
-        userData = userLoginRegisterRepo.findByEmail(loginUser.getEmail());
+        //userData = userLoginRegisterRepo.findByEmail(loginUser.getEmail());
+        userData = userLoginRegisterRepo.findOne(findByEmail(loginUser.getEmail()));
         if (userData == null){
             return new ResponseEntity<>(errorSignInText, HttpStatus.UNPROCESSABLE_ENTITY);
         }
